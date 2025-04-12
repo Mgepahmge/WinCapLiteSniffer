@@ -5,6 +5,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include <iostream>
+#include <vector>
 #include <map>
 #include <pcap.h>
 
@@ -16,7 +17,7 @@ public:
 
     ~DeviceEnumerator();
 
-    [[nodiscard]] std::map<std::string, std::string> GetDeviceList() const;
+    [[nodiscard]] std::vector<std::pair<std::string, std::string>> GetDeviceList() const;
 
     pcap_if_t* operator[](const size_t &index) const;
 

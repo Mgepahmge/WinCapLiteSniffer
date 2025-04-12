@@ -6,6 +6,6 @@ int main()
 {
     DeviceEnumerator enumerator;
     std::cout << enumerator << std::endl;
-    std::cout << enumerator[3]->name << std::endl;
+    std::cout << enumerator[0]->name << std::endl;
     return 0;
 }

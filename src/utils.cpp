@@ -17,10 +17,10 @@ DeviceEnumerator::~DeviceEnumerator() {
     pcap_freealldevs(alldevs);
 }
 
-std::map<std::string, std::string> DeviceEnumerator::GetDeviceList() const {
-    std::map<std::string, std::string> deviceList;
+std::vector<std::pair<std::string, std::string>> DeviceEnumerator::GetDeviceList() const {
+    std::vector<std::pair<std::string, std::string>> deviceList;
     for (pcap_if_t *d = alldevs; d != NULL; d = d->next) {
-        deviceList[d->name] = d->description;
+        deviceList.push_back(std::make_pair(d->name, d->description));
     }
     return deviceList;
 }
@@ -30,11 +30,14 @@ pcap_if_t* DeviceEnumerator::operator[](const size_t& index) const {
         std::cerr << "Invalid index: " << index << std::endl;
         return nullptr;
     }
-    auto d = alldevs;
-    for (auto i = 0; i < index; i++) {
-        d = d->next;
+    auto i = 0;
+    for (pcap_if_t *d = alldevs; d != NULL; d = d->next) {
+        if (i == index) {
+            return d;
+        }
+        i++;
     }
-    return d;
+    return nullptr;
 }
 
 std::ostream& operator<<(std::ostream& os, const DeviceEnumerator& deviceEnumerator) {
