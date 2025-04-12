@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB SRCS "src/*.cpp")
 
 include_directories(
-        "include/WinCapLiteSniffer"
+        "include"
         "F:/WpdPack/Include"
 )
 
