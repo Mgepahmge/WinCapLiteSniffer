@@ -7,23 +7,26 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <thread>
 #include <pcap.h>
 
-class DeviceEnumerator {
-public:
-    friend std::ostream &operator<<(std::ostream &os, const DeviceEnumerator &deviceEnumerator);
+namespace wcls {
+    class DeviceEnumerator {
+    public:
+        friend std::ostream &operator<<(std::ostream &os, const DeviceEnumerator &deviceEnumerator);
 
-    DeviceEnumerator();
+        DeviceEnumerator();
 
-    ~DeviceEnumerator();
+        ~DeviceEnumerator();
 
-    [[nodiscard]] std::vector<std::pair<std::string, std::string>> GetDeviceList() const;
+        [[nodiscard]] std::vector<std::pair<std::string, std::string>> GetDeviceList() const;
 
-    pcap_if_t* operator[](const size_t &index) const;
+        pcap_if_t* operator[](const size_t &index) const;
 
-private:
-    pcap_if_t *alldevs;
-    size_t count;
-};
+    private:
+        pcap_if_t *alldevs;
+        size_t count;
+    };
+}
 
 #endif //UTILS_H
