@@ -7,6 +7,7 @@ file(GLOB SRCS "src/*.cpp")
 
 include_directories(
         "include"
+        "include/Protocols"
         "F:/WpdPack/Include"
 )
 
