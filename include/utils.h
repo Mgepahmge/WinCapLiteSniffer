@@ -15,7 +15,11 @@ namespace wcls {
     public:
         friend std::ostream &operator<<(std::ostream &os, const DeviceEnumerator &deviceEnumerator);
 
-        DeviceEnumerator();
+        DeviceEnumerator(const DeviceEnumerator &deviceEnumerator) = delete;
+
+        DeviceEnumerator &operator=(const DeviceEnumerator &deviceEnumerator) = delete;
+
+        static DeviceEnumerator& Instance();
 
         ~DeviceEnumerator();
 
@@ -26,6 +30,8 @@ namespace wcls {
     private:
         pcap_if_t *alldevs;
         size_t count;
+
+        DeviceEnumerator();
     };
 }
 

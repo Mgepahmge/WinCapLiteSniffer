@@ -14,6 +14,11 @@ namespace wcls {
         }
     }
 
+    DeviceEnumerator& DeviceEnumerator::Instance() {
+        static DeviceEnumerator instance;
+        return instance;
+    }
+
     DeviceEnumerator::~DeviceEnumerator() {
         pcap_freealldevs(alldevs);
     }
