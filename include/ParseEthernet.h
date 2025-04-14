@@ -10,7 +10,7 @@
 
 namespace wcls {
     using namespace protocol;
-    const u_char* ParseEthernet(const u_char* packet, const EthernetHeader* header, bool& is_ipv4, uint32_t caplen);
+    const u_char* ParseEthernet(const u_char* packet, EthernetHeader* header, uint32_t caplen);
 }
 
 

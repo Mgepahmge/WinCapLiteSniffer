@@ -7,6 +7,7 @@
 #include "ParseEthernet.h"
 #include "ParseNetwork.h"
 #include "ParseTransport.h"
+#include "Protocols/Macro.h"
 #include "utils.h"
 
 namespace wcls {

@@ -3,16 +3,16 @@
 //
 #include "ParseTransport.h"
 
-void wcls::ParseTCP(const u_char* packet, const TCPHeader* header, uint32_t caplen) {
+void wcls::ParseTCP(const u_char* packet, TCPHeader* header, uint32_t caplen) {
     if (caplen < sizeof(TCPHeader)) {
         return;
     }
-    header = reinterpret_cast<const TCPHeader*>(packet);
+    memcpy(header, packet, sizeof(TCPHeader));
 }
 
-void wcls::ParseUDP(const u_char* packet, const UDPHeader* header, uint32_t caplen) {
+void wcls::ParseUDP(const u_char* packet, UDPHeader* header, uint32_t caplen) {
     if (caplen < sizeof(UDPHeader)) {
         return;
     }
-    header = reinterpret_cast<const UDPHeader*>(packet);
+    memcpy(header, packet, sizeof(UDPHeader));
 }

@@ -78,27 +78,40 @@ namespace wcls {
     }
 
     void PacketCapture::PacketHandler(u_char* userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
-        printf("Captured packet length: %d\n", pkthdr->len);
-        const EthernetHeader header{};
-        bool is_ipv4 = false;
-        const u_char* data = ParseEthernet(packet, &header, is_ipv4, pkthdr->len);
-        printf("Parsed Ethernet");
-        if (is_ipv4) {
-            printf("Parsed IPv4");
-            const IPv4Header ipHeader{};
-            bool is_tcp = false;
-            bool is_udp = false;
-            data = ParseIpv4(data, &ipHeader, is_tcp, is_udp, pkthdr->len - sizeof(EthernetHeader));
-            if (is_tcp) {
-                printf("Parsed TCP");
-                const TCPHeader tcpHeader{};
-                ParseTCP(data, &tcpHeader, pkthdr->len - sizeof(EthernetHeader) - sizeof(IPv4Header));
-            } else if (is_udp) {
-                printf("Parsed UDP");
-                const UDPHeader udpHeader{};
-                ParseUDP(data, &udpHeader, pkthdr->len - sizeof(EthernetHeader) - sizeof(IPv4Header));
+        EthernetHeader header{};
+        const u_char* data = ParseEthernet(packet, &header, pkthdr->len);
+        printf("Captured packet length: %d ", pkthdr->len);
+        if (header.vlanInfo == 0) {
+            printf("Ether %d ", ntohs(header.etherType));
+            printf(ETHER_TYPE_TO_STR(header.etherType));
+            printf(" ");
+        } else {
+            printf("Ether %d ", ntohs(header.vlanEtherType));
+            printf(ETHER_TYPE_TO_STR(header.vlanEtherType));
+            printf(" ");
+        }
+        if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IP) {
+            IPv4Header ipHeader{};
+            data = ParseIpv4(data, &ipHeader, pkthdr->len - (data - packet));
+            printf("%d ", ipHeader.protocol);
+            printf(IP_PROTOCOL_TO_STR(ipHeader.protocol));
+            printf(" ");
+            switch (ipHeader.protocol) {
+                case MY_IPPROTO_TCP: {
+                    TCPHeader tcpHeader{};
+                    ParseTCP(data, &tcpHeader, pkthdr->len - (data - packet));
+                    break;
+                }
+                case MY_IPPROTO_UDP: {
+                    UDPHeader udpHeader{};
+                    ParseUDP(data, &udpHeader, pkthdr->len - (data - packet));
+                    break;
+                }
+                default:
+                    break;
             }
         }
+        printf("\n");
     }
 }
 
