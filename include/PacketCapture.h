@@ -4,9 +4,9 @@
 
 #ifndef PACKETCAPTURE_H
 #define PACKETCAPTURE_H
-#include "Protocols/NetworkLayer.h"
-#include "Protocols/DataLinkLayer.h"
-#include "Protocols/TransportLayer.h"
+#include "ParseEthernet.h"
+#include "ParseNetwork.h"
+#include "ParseTransport.h"
 #include "utils.h"
 
 namespace wcls {

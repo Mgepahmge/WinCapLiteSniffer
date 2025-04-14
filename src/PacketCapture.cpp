@@ -79,6 +79,26 @@ namespace wcls {
 
     void PacketCapture::PacketHandler(u_char* userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
         printf("Captured packet length: %d\n", pkthdr->len);
+        const EthernetHeader header{};
+        bool is_ipv4 = false;
+        const u_char* data = ParseEthernet(packet, &header, is_ipv4, pkthdr->len);
+        printf("Parsed Ethernet");
+        if (is_ipv4) {
+            printf("Parsed IPv4");
+            const IPv4Header ipHeader{};
+            bool is_tcp = false;
+            bool is_udp = false;
+            data = ParseIpv4(data, &ipHeader, is_tcp, is_udp, pkthdr->len - sizeof(EthernetHeader));
+            if (is_tcp) {
+                printf("Parsed TCP");
+                const TCPHeader tcpHeader{};
+                ParseTCP(data, &tcpHeader, pkthdr->len - sizeof(EthernetHeader) - sizeof(IPv4Header));
+            } else if (is_udp) {
+                printf("Parsed UDP");
+                const UDPHeader udpHeader{};
+                ParseUDP(data, &udpHeader, pkthdr->len - sizeof(EthernetHeader) - sizeof(IPv4Header));
+            }
+        }
     }
 }
 
