@@ -12,8 +12,9 @@
 namespace wcls {
     class PacketCapture {
     public:
-        PacketCapture(std::string  deviceName, bool promiscuous, int timeout, int snaplen);
-        PacketCapture();
+        PacketCapture(const PacketCapture&) = delete;
+        PacketCapture& operator=(const PacketCapture&) = delete;
+        static PacketCapture& Instance();
         ~PacketCapture();
         bool Initialize();
         bool StartCapture();
@@ -31,6 +32,8 @@ namespace wcls {
         int m_timeout;
         int m_snaplen;
         char m_errBuf[PCAP_ERRBUF_SIZE];
+
+        PacketCapture();
 
         static void PacketHandler(u_char* userData, const struct pcap_pkthdr* pkthdr, const u_char* packet);
     };

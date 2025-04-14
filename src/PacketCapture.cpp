@@ -6,13 +6,13 @@
 #include <utility>
 
 namespace wcls {
-    PacketCapture::PacketCapture(std::string deviceName, const bool promiscuous, const int timeout,
-                                   const int snaplen) :
-    m_pcapHandle(NULL), m_device(std::move(deviceName)), m_promiscuous(promiscuous), m_timeout(timeout),
-    m_snaplen(snaplen), m_errBuf{} {
+    PacketCapture::PacketCapture() : m_pcapHandle(NULL),  m_promiscuous(true), m_timeout(1000),
+                                     m_snaplen(65535), m_errBuf{} {
     }
 
-    PacketCapture::PacketCapture() : PacketCapture("", true, 1000, 65535) {
+    PacketCapture& PacketCapture::Instance() {
+        static PacketCapture instance;
+        return instance;
     }
 
     PacketCapture::~PacketCapture() {
