@@ -110,6 +110,26 @@ namespace wcls {
                 default:
                     break;
             }
+        } else if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IPV6) {
+            IPv6Header ipHeader{};
+            data = ParseIpv6(data, &ipHeader, pkthdr->len - (data - packet));
+            printf("%d ", ipHeader.next_header);
+            printf(IP_PROTOCOL_TO_STR(ipHeader.next_header));
+            printf(" ");
+            switch (ipHeader.next_header) {
+                case MY_IPPROTO_TCP: {
+                    TCPHeader tcpHeader{};
+                    // ParseTCP(data, &tcpHeader, pkthdr->len - (data - packet));
+                    break;
+                }
+                case MY_IPPROTO_UDP: {
+                    UDPHeader udpHeader{};
+                    // ParseUDP(data, &udpHeader, pkthdr->len - (data - packet));
+                    break;
+                }
+                default:
+                    break;
+            }
         }
         printf("\n");
     }

@@ -19,3 +19,17 @@ const u_char* wcls::ParseIpv4(const u_char* packet, IPv4Header* header, uint32_t
 
     return packet + ihl;
 }
+
+const u_char* wcls::ParseIpv6(const u_char* packet, IPv6Header* header, uint32_t caplen) {
+    if (caplen < 40) {
+        return nullptr;
+    }
+
+    memcpy(header, packet, sizeof(IPv6Header));
+
+    if (((header->version_class_flow >> 28) & 0x0F) != 6) {
+        return nullptr;
+    }
+
+    return packet + 40;
+}

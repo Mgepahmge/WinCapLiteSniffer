@@ -27,6 +27,18 @@ namespace wcls::protocol  {
         uint32_t destIP;         // 目标IP地址（网络字节序）
         // 可变长度选项字段（如果有）
     };
+
+    struct IPv6Header {
+        // 版本(4bit) + 流量类型(8bit) + 流标签(20bit)
+        uint32_t version_class_flow;  // 高4位是版本号(6)
+
+        uint16_t payload_length;      // 有效载荷长度（不包括IPv6头）
+        uint8_t  next_header;         // 下一个头部类型
+        uint8_t  hop_limit;           // 跳数限制
+
+        uint8_t  srcIP[16];           // 源IPv6地址（128位）
+        uint8_t  destIP[16];          // 目标IPv6地址（128位）
+    };
 #pragma pack(pop)
 
 }
