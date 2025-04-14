@@ -4,11 +4,7 @@
 
 #ifndef PACKETCAPTURE_H
 #define PACKETCAPTURE_H
-#include "ParseEthernet.h"
-#include "ParseNetwork.h"
-#include "ParseTransport.h"
-#include "Protocols/Macro.h"
-#include "utils.h"
+#include "Packet.h"
 
 namespace wcls {
     class PacketCapture {

@@ -8,6 +8,10 @@
 #include <vector>
 #include <map>
 #include <thread>
+#include "ParseEthernet.h"
+#include "ParseNetwork.h"
+#include "ParseTransport.h"
+#include "Protocols/Macro.h"
 #include <pcap.h>
 
 namespace wcls {

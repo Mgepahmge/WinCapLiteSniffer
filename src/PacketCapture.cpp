@@ -79,7 +79,8 @@ namespace wcls {
 
     void PacketCapture::PacketHandler(u_char* userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
         EthernetHeader header{};
-        const u_char* data = ParseEthernet(packet, &header, pkthdr->len);
+        uint32_t caplen = pkthdr->len;
+        const u_char* data = ParseEthernet(packet, &header, caplen);
         printf("Captured packet length: %d ", pkthdr->len);
         if (header.vlanInfo == 0) {
             printf("Ether %d ", ntohs(header.etherType));
@@ -92,19 +93,19 @@ namespace wcls {
         }
         if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IP) {
             IPv4Header ipHeader{};
-            data = ParseIpv4(data, &ipHeader, pkthdr->len - (data - packet));
+            data = ParseIpv4(data, &ipHeader, caplen);
             printf("%d ", ipHeader.protocol);
             printf(IP_PROTOCOL_TO_STR(ipHeader.protocol));
             printf(" ");
             switch (ipHeader.protocol) {
                 case MY_IPPROTO_TCP: {
                     TCPHeader tcpHeader{};
-                    ParseTCP(data, &tcpHeader, pkthdr->len - (data - packet));
+                    ParseTCP(data, &tcpHeader, caplen);
                     break;
                 }
                 case MY_IPPROTO_UDP: {
                     UDPHeader udpHeader{};
-                    ParseUDP(data, &udpHeader, pkthdr->len - (data - packet));
+                    ParseUDP(data, &udpHeader, caplen);
                     break;
                 }
                 default:
@@ -112,7 +113,7 @@ namespace wcls {
             }
         } else if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IPV6) {
             IPv6Header ipHeader{};
-            data = ParseIpv6(data, &ipHeader, pkthdr->len - (data - packet));
+            data = ParseIpv6(data, &ipHeader, caplen);
             printf("%d ", ipHeader.next_header);
             printf(IP_PROTOCOL_TO_STR(ipHeader.next_header));
             printf(" ");

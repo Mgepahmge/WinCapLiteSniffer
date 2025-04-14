@@ -3,7 +3,7 @@
 //
 #include "ParseNetwork.h"
 
-const u_char* wcls::ParseIpv4(const u_char* packet, IPv4Header* header, uint32_t caplen) {
+const u_char* wcls::ParseIpv4(const u_char* packet, IPv4Header* header, uint32_t& caplen) {
     if (caplen < 20) {
         return nullptr;
     }
@@ -17,10 +17,11 @@ const u_char* wcls::ParseIpv4(const u_char* packet, IPv4Header* header, uint32_t
 
     memcpy(header, packet, sizeof(IPv4Header));
 
+    caplen -= ihl;
     return packet + ihl;
 }
 
-const u_char* wcls::ParseIpv6(const u_char* packet, IPv6Header* header, uint32_t caplen) {
+const u_char* wcls::ParseIpv6(const u_char* packet, IPv6Header* header, uint32_t& caplen) {
     if (caplen < 40) {
         return nullptr;
     }
@@ -31,5 +32,6 @@ const u_char* wcls::ParseIpv6(const u_char* packet, IPv6Header* header, uint32_t
         return nullptr;
     }
 
+    caplen -= 40;
     return packet + 40;
 }

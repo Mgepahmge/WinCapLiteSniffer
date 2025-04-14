@@ -12,9 +12,9 @@
 namespace wcls {
     using namespace protocol;
 
-    void ParseTCP(const u_char* packet, TCPHeader* header, uint32_t caplen);
+    bool ParseTCP(const u_char* packet, TCPHeader* header, uint32_t caplen);
 
-    void ParseUDP(const u_char* packet, UDPHeader* header, uint32_t caplen);
+    bool ParseUDP(const u_char* packet, UDPHeader* header, uint32_t caplen);
 }
 
 #endif //PARSETRANSPORT_H

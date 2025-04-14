@@ -3,7 +3,7 @@
 //
 #include "ParseEthernet.h"
 
-const u_char* wcls::ParseEthernet(const u_char* packet, EthernetHeader* header, uint32_t caplen) {
+const u_char* wcls::ParseEthernet(const u_char* packet, EthernetHeader* header, uint32_t& caplen) {
     if (caplen < 14) return nullptr;
 
     memcpy(header->destMAC, packet, 6);
@@ -16,11 +16,13 @@ const u_char* wcls::ParseEthernet(const u_char* packet, EthernetHeader* header, 
         header->vlanInfo = *(uint16_t*)(packet + 14);
         header->vlanEtherType = *(uint16_t*)(packet + 16);
 
+        caplen -= 18;
         return packet + 18;
     } else {
         header->vlanInfo = 0;
         header->vlanEtherType = 0;
 
+        caplen -= 14;
         return packet + 14;
     }
 }
