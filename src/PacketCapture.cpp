@@ -52,13 +52,15 @@ namespace wcls {
         return true;
     }
 
-    void PacketCapture::StopCapture() {
+    size_t PacketCapture::StopCapture() {
         if (m_captureRunning && m_pcapHandle) {
             pcap_breakloop(m_pcapHandle);
             if (m_captureThread.joinable()) {
                 m_captureThread.join();
             }
+            return m_packets.size();
         }
+        return 0;
     }
 
     void PacketCapture::SetDevice(const std::string& deviceName) {
@@ -77,62 +79,16 @@ namespace wcls {
         m_snaplen = size;
     }
 
+    void PacketCapture::addPacket(const Packet& packet) {
+        m_packets.push_back(packet);
+    }
+
+    std::vector<Packet>& PacketCapture::getPackets() {
+        return m_packets;
+    }
+
     void PacketCapture::PacketHandler(u_char* userData, const struct pcap_pkthdr* pkthdr, const u_char* packet) {
-        EthernetHeader header{};
-        uint32_t caplen = pkthdr->len;
-        const u_char* data = ParseEthernet(packet, &header, caplen);
-        printf("Captured packet length: %d ", pkthdr->len);
-        if (header.vlanInfo == 0) {
-            printf("Ether %d ", ntohs(header.etherType));
-            printf(ETHER_TYPE_TO_STR(header.etherType));
-            printf(" ");
-        } else {
-            printf("Ether %d ", ntohs(header.vlanEtherType));
-            printf(ETHER_TYPE_TO_STR(header.vlanEtherType));
-            printf(" ");
-        }
-        if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IP) {
-            IPv4Header ipHeader{};
-            data = ParseIpv4(data, &ipHeader, caplen);
-            printf("%d ", ipHeader.protocol);
-            printf(IP_PROTOCOL_TO_STR(ipHeader.protocol));
-            printf(" ");
-            switch (ipHeader.protocol) {
-                case MY_IPPROTO_TCP: {
-                    TCPHeader tcpHeader{};
-                    ParseTCP(data, &tcpHeader, caplen);
-                    break;
-                }
-                case MY_IPPROTO_UDP: {
-                    UDPHeader udpHeader{};
-                    ParseUDP(data, &udpHeader, caplen);
-                    break;
-                }
-                default:
-                    break;
-            }
-        } else if ((header.vlanInfo == 0 ? header.etherType : header.vlanEtherType) == MY_ETHERTYPE_IPV6) {
-            IPv6Header ipHeader{};
-            data = ParseIpv6(data, &ipHeader, caplen);
-            printf("%d ", ipHeader.next_header);
-            printf(IP_PROTOCOL_TO_STR(ipHeader.next_header));
-            printf(" ");
-            switch (ipHeader.next_header) {
-                case MY_IPPROTO_TCP: {
-                    TCPHeader tcpHeader{};
-                    // ParseTCP(data, &tcpHeader, pkthdr->len - (data - packet));
-                    break;
-                }
-                case MY_IPPROTO_UDP: {
-                    UDPHeader udpHeader{};
-                    // ParseUDP(data, &udpHeader, pkthdr->len - (data - packet));
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-        printf("\n");
+        PacketCapture::Instance().addPacket(Packet(packet, pkthdr));
     }
 }
 

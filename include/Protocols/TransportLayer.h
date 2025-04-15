@@ -20,7 +20,6 @@ namespace wcls::protocol  {
         uint16_t window_size;    // 窗口大小
         uint16_t checksum;       // 校验和
         uint16_t urgent_ptr;     // 紧急指针
-        // 可变长度选项字段（如果有）
     };
 
     struct UDPHeader {

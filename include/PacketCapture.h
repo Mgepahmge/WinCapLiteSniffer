@@ -15,11 +15,13 @@ namespace wcls {
         ~PacketCapture();
         bool Initialize();
         bool StartCapture();
-        void StopCapture();
+        size_t StopCapture();
         void SetDevice(const std::string& deviceName);
         void SetPromiscuous(bool enable);
         void SetTimeout(int milliseconds);
         void SetMaxPacketSize(int size);
+        void addPacket(const Packet& packet);
+        std::vector<Packet>& getPackets();
     private:
         std::thread m_captureThread;
         std::atomic<bool> m_captureRunning{false};
@@ -29,6 +31,7 @@ namespace wcls {
         int m_timeout;
         int m_snaplen;
         char m_errBuf[PCAP_ERRBUF_SIZE];
+        std::vector<Packet> m_packets;
 
         PacketCapture();
 
