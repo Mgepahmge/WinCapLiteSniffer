@@ -8,7 +8,7 @@ wcls::Packet::Packet(const u_char* data, const struct pcap_pkthdr* pkthdr) : dat
                                                                  ethernetEnable(false), ipv4Enable(false),
                                                                  ipv6Enable(false), tcpEnable(false),
                                                                  udpEnable(false) {
-    uint32_t caplen = pkthdr->caplen;
+    uint32_t caplen = pkthdr->len;
     const u_char* temp = data;
     temp = ParseEthernet(temp, &ethernetHeader, caplen);
     if (temp == nullptr) {
@@ -201,6 +201,7 @@ std::ostream& wcls::operator<<(std::ostream& os, const wcls::protocol::UDPHeader
 
 std::ostream& wcls::operator<<(std::ostream& os, const Packet& packet) {
     os << "Packet [" << std::endl;
+    os << "Size: " << packet.pkthdr->len  << " bytes" << std::endl;
     if (packet.ethernetEnable) {
         os << packet.ethernetHeader << std::endl;
     }
