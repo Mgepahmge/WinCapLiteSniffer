@@ -15,7 +15,21 @@ namespace wcls {
         friend std::ostream& operator<<(std::ostream& os, const Packet& packet);
 
         Packet(const u_char* data, const struct pcap_pkthdr* pkthdr);
+
         ~Packet();
+
+        EthernetHeader& GetEthernetHeader();
+
+        IPv4Header& GetIPv4Header();
+
+        IPv6Header& GetIPv6Header();
+
+        TCPHeader& GetTCPHeader();
+
+        UDPHeader& GetUDPHeader();
+
+        [[nodiscard]] std::string GetTime() const;
+
     private:
         const u_char* data;
         const struct pcap_pkthdr* pkthdr;
@@ -29,6 +43,7 @@ namespace wcls {
         bool ipv6Enable;
         bool tcpEnable;
         bool udpEnable;
+        timeval time;
 
     };
 
@@ -44,6 +59,8 @@ namespace wcls {
     std::ostream& operator<<(std::ostream& os, const TCPHeader& header);
 
     std::ostream& operator<<(std::ostream& os, const UDPHeader& header);
+
+    std::string timeval_to_datetime_string(const struct timeval& tv, const std::string& format = "%Y-%m-%d %H:%M:%S.%f");
 
 }
 

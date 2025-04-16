@@ -19,21 +19,6 @@ void button_callback(Fl_Widget* widget, void* data) {
 
 int main()
 {
-    auto* window = new Fl_Window(400, 300, "FLTK");
-
-    auto* box = new Fl_Box(100, 50, 200, 50, "FLTK");
-    box->box(FL_UP_BOX);
-    box->labelfont(FL_BOLD);
-    box->labelsize(18);
-    box->labeltype(FL_SHADOW_LABEL);
-
-    auto* button = new Fl_Button(150, 150, 100, 40, "click me");
-    button->callback(button_callback, box);
-
-    window->end();
-    window->show();
-
-    return Fl::run();
     std::cout << wcls::DeviceEnumerator::Instance() << std::endl;
     wcls::PacketCapture::Instance().SetDevice(wcls::DeviceEnumerator::Instance()[1]->name);
     wcls::PacketCapture::Instance().Initialize();

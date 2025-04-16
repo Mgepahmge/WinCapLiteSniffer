@@ -9,6 +9,7 @@ wcls::Packet::Packet(const u_char* data, const struct pcap_pkthdr* pkthdr) : dat
                                                                  ipv6Enable(false), tcpEnable(false),
                                                                  udpEnable(false) {
     uint32_t caplen = pkthdr->len;
+    time = pkthdr->ts;
     const u_char* temp = data;
     temp = ParseEthernet(temp, &ethernetHeader, caplen);
     if (temp == nullptr) {
@@ -55,6 +56,45 @@ wcls::Packet::Packet(const u_char* data, const struct pcap_pkthdr* pkthdr) : dat
 }
 
 wcls::Packet::~Packet() = default;
+
+wcls::EthernetHeader& wcls::Packet::GetEthernetHeader() {
+    if (ethernetEnable) {
+        return ethernetHeader;
+    }
+    throw std::runtime_error("Ethernet header not enabled");
+}
+
+wcls::IPv4Header& wcls::Packet::GetIPv4Header() {
+    if (ipv4Enable) {
+        return ipv4Header;
+    }
+    throw std::runtime_error("IPv4 header not enabled");
+}
+
+wcls::IPv6Header& wcls::Packet::GetIPv6Header() {
+    if (ipv6Enable) {
+        return ipv6Header;
+    }
+    throw std::runtime_error("IPv6 header not enabled");
+}
+
+wcls::TCPHeader& wcls::Packet::GetTCPHeader() {
+    if (tcpEnable) {
+        return tcpHeader;
+    }
+    throw std::runtime_error("TCP header not enabled");
+}
+
+wcls::UDPHeader& wcls::Packet::GetUDPHeader() {
+    if (udpEnable) {
+        return udpHeader;
+    }
+    throw std::runtime_error("UDP header not enabled");
+}
+
+std::string wcls::Packet::GetTime() const {
+    return timeval_to_datetime_string(time);
+}
 
 static std::string wcls::mac_to_string(const uint8_t mac[6]) {
     std::stringstream ss;
@@ -201,6 +241,7 @@ std::ostream& wcls::operator<<(std::ostream& os, const wcls::protocol::UDPHeader
 
 std::ostream& wcls::operator<<(std::ostream& os, const Packet& packet) {
     os << "Packet [" << std::endl;
+    os << "Timestamp: " << timeval_to_datetime_string(packet.time) << std::endl;
     os << "Size: " << packet.pkthdr->len  << " bytes" << std::endl;
     if (packet.ethernetEnable) {
         os << packet.ethernetHeader << std::endl;
@@ -219,4 +260,37 @@ std::ostream& wcls::operator<<(std::ostream& os, const Packet& packet) {
     }
     os << "]";
     return os;
+}
+
+std::string wcls::timeval_to_datetime_string(const struct timeval& tv, const std::string& format ) {
+    time_t seconds = tv.tv_sec;
+
+    struct tm* timeinfo = localtime(&seconds);
+
+    std::stringstream ss;
+
+    std::string result;
+    size_t pos = 0;
+    std::string fmt = format;
+
+    while ((pos = fmt.find("%f")) != std::string::npos) {
+        std::string prefix = fmt.substr(0, pos);
+        char buffer[128];
+        strftime(buffer, sizeof(buffer), prefix.c_str(), timeinfo);
+        result += buffer;
+
+        ss.str("");
+        ss << std::setfill('0') << std::setw(6) << tv.tv_usec;
+        result += ss.str();
+
+        fmt = fmt.substr(pos + 2);
+    }
+
+    if (!fmt.empty()) {
+        char buffer[128];
+        strftime(buffer, sizeof(buffer), fmt.c_str(), timeinfo);
+        result += buffer;
+    }
+
+    return result;
 }
