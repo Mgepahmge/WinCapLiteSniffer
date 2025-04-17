@@ -12,23 +12,31 @@
 namespace wcls {
     class Packet {
     public:
+        bool ethernetEnable;
+        bool ipv4Enable;
+        bool ipv6Enable;
+        bool tcpEnable;
+        bool udpEnable;
+
         friend std::ostream& operator<<(std::ostream& os, const Packet& packet);
 
         Packet(const u_char* data, const struct pcap_pkthdr* pkthdr);
 
         ~Packet();
 
-        EthernetHeader& GetEthernetHeader();
+        [[nodiscard]] EthernetHeader GetEthernetHeader() const;
 
-        IPv4Header& GetIPv4Header();
+        [[nodiscard]] IPv4Header GetIPv4Header() const;
 
-        IPv6Header& GetIPv6Header();
+        [[nodiscard]] IPv6Header GetIPv6Header() const;
 
-        TCPHeader& GetTCPHeader();
+        [[nodiscard]] TCPHeader GetTCPHeader() const;
 
-        UDPHeader& GetUDPHeader();
+        [[nodiscard]] UDPHeader GetUDPHeader() const;
 
         [[nodiscard]] std::string GetTime() const;
+
+        [[nodiscard]] uint32_t GetPacketLength() const;
 
     private:
         const u_char* data;
@@ -38,16 +46,19 @@ namespace wcls {
         IPv6Header ipv6Header;
         TCPHeader tcpHeader;
         UDPHeader udpHeader;
-        bool ethernetEnable;
-        bool ipv4Enable;
-        bool ipv6Enable;
-        bool tcpEnable;
-        bool udpEnable;
         timeval time;
 
     };
 
-    static std::string mac_to_string(const uint8_t mac[6]);
+    static std::string mac_to_string(const uint8_t mac[6]) {
+        std::stringstream ss;
+        ss << std::hex << std::setfill('0');
+        for (int i = 0; i < 6; ++i) {
+            ss << std::setw(2) << static_cast<int>(mac[i]);
+            if (i != 5) ss << ":";
+        }
+        return ss.str();
+    }
 
 
     inline std::ostream& operator<<(std::ostream& os, const EthernetHeader& header);

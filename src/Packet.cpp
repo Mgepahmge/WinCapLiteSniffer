@@ -57,35 +57,35 @@ wcls::Packet::Packet(const u_char* data, const struct pcap_pkthdr* pkthdr) : dat
 
 wcls::Packet::~Packet() = default;
 
-wcls::EthernetHeader& wcls::Packet::GetEthernetHeader() {
+wcls::EthernetHeader wcls::Packet::GetEthernetHeader() const {
     if (ethernetEnable) {
         return ethernetHeader;
     }
     throw std::runtime_error("Ethernet header not enabled");
 }
 
-wcls::IPv4Header& wcls::Packet::GetIPv4Header() {
+wcls::IPv4Header wcls::Packet::GetIPv4Header() const {
     if (ipv4Enable) {
         return ipv4Header;
     }
     throw std::runtime_error("IPv4 header not enabled");
 }
 
-wcls::IPv6Header& wcls::Packet::GetIPv6Header() {
+wcls::IPv6Header wcls::Packet::GetIPv6Header() const {
     if (ipv6Enable) {
         return ipv6Header;
     }
     throw std::runtime_error("IPv6 header not enabled");
 }
 
-wcls::TCPHeader& wcls::Packet::GetTCPHeader() {
+wcls::TCPHeader wcls::Packet::GetTCPHeader() const {
     if (tcpEnable) {
         return tcpHeader;
     }
     throw std::runtime_error("TCP header not enabled");
 }
 
-wcls::UDPHeader& wcls::Packet::GetUDPHeader() {
+wcls::UDPHeader wcls::Packet::GetUDPHeader() const {
     if (udpEnable) {
         return udpHeader;
     }
@@ -96,14 +96,8 @@ std::string wcls::Packet::GetTime() const {
     return timeval_to_datetime_string(time);
 }
 
-static std::string wcls::mac_to_string(const uint8_t mac[6]) {
-    std::stringstream ss;
-    ss << std::hex << std::setfill('0');
-    for (int i = 0; i < 6; ++i) {
-        ss << std::setw(2) << static_cast<int>(mac[i]);
-        if (i != 5) ss << ":";
-    }
-    return ss.str();
+uint32_t wcls::Packet::GetPacketLength() const {
+    return pkthdr->len;
 }
 
 inline std::ostream& wcls::operator<<(std::ostream& os, const wcls::protocol::EthernetHeader& header) {
